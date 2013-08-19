@@ -1,3 +1,5 @@
-.cproject
-.project
-.settings
+/.cproject
+/.project
+/.settings
+/vcr
+/*.o

@@ -1,0 +1,37 @@
+#version 330
+
+out vec4 pixelColor; //Zmienna wyjsciowa fragment shadera. Zapisuje sie do niej ostateczny (prawie) kolor piksela
+
+in vec4 iV; //interpolowany wektor do obserwatora
+in vec4 iN; //interpolowany wektor normalny
+in vec4 iL; //interpolowany wektor do światła
+in vec4 iC; //interpolowany kolor (obecnie ignorowany)
+in vec2 iTexCoords0; //interpolowane współrzędne teksturowania
+
+
+uniform sampler2D textureMap0;
+uniform sampler2D textureMap1;
+
+float shininess=50;
+
+void main(void) {
+	vec4 eyeN=normalize(iN);
+	vec4 eyeV=normalize(iV);
+	vec4 eyeL=normalize(iL);
+	vec4 eyeR=reflect(-eyeL,eyeN);
+
+	float nl=max(0,dot(eyeL,eyeN));
+	float rv=pow(max(0,dot(eyeR,eyeV)),shininess);
+
+	vec4 texColor0=texture(textureMap0,iTexCoords0);
+	vec4 texColor1=texture(textureMap1,iTexCoords0);//!! korzystamy z tych samych współrzędnnych teksturowania, ale oczywiście nie zawsze tak musi być
+
+	vec4 La=vec4(0,0,0,0); //kolor światła otoczenia
+	vec4 Ma=vec4(0,0,0,0); //kolor materiału dla światła otoczenia
+	vec4 Ld=vec4(1,1,1,1); //kolor światła rozpraszanego
+	vec4 Md=texColor0;     //kolor materiału dla światła rozpraszanego
+	vec4 Ls=vec4(1,1,1,0); //kolor światła odbijanego
+	vec4 Ms=texColor1;     //kolor materiału dla światła odbitego
+
+	pixelColor=La*Ma+Ld*Md*nl+Ls*Ms*rv;
+}

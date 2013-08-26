@@ -2,16 +2,13 @@ vcr-opengl
 ==========
 
 TODO:
- - znalezienie i załadowanie modeli
- - oteksturowanie modeli
  - rendering wody
- - rendering dymu (parowiec)
- - rendering poruszających się wioseł (galera)
- - rendering ruchu żagiel (żaglówka)
- - wiatr (żagle, dym)
- - obrót kamerą - myszka? oddalenie, zbliżenie - strzałki?
+ - statek - galera - znalezienie i załadowanie modelu
+ - oteksturowanie modeli
+ - rendering poruszających się wioseł
  - odpowiednie oświetlenie itp.
- - wybór statku (1,2,3?)
 
 DONE:
+ - przykładowe tło
+ - obrót kamerą - myszka? oddalenie, zbliżenie - strzałki?
  - repozytorium, szkielet projektu

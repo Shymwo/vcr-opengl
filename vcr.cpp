@@ -28,6 +28,15 @@ float speed=120; //120 stopni/s
 int lastTime=0;
 float anglee=0;
 
+//mouse
+static int	left_click = GLUT_UP;
+static int	right_click = GLUT_UP;
+static int	xold = 0;
+static int	yold = 0;
+static float	rotate_x = 30;
+static float	rotate_y = 15;
+static float	translate_z = 40;
+
 //Uchwyty na shadery
 ShaderProgram *shaderProgram; //Wskaźnik na obiekt reprezentujący program cieniujący.
 
@@ -128,17 +137,18 @@ void drawObject() {
 //Procedura rysująca
 void displayFrame() {
 	//Wyczyść bufor kolorów i bufor głębokości
-	glClearColor(0,0,0,1);
+	glClearColor(0.6,0.7,1,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Wylicz macierz rzutowania
-	matP=perspective(cameraAngle, (float)windowWidth/(float)windowHeight, 1.0f, 100.0f);
+	matP=perspective(translate_z, (float)windowWidth/(float)windowHeight, 1.0f, 100.0f);
 
 	//Wylicz macierz widoku
 	matV=lookAt(vec3(0.0f,0.0f,4.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
 
 	//Wylicz macierz modelu
-	matM=rotate(mat4(1.0f),anglee,vec3(0.5,1,0));
+	matM=rotate(mat4(1.0f),rotate_y,vec3(1,0,0));
+	matM=rotate(matM,rotate_x,vec3(0,1,0));
 
 	//Narysuj obiekt
 	drawObject();
@@ -207,6 +217,48 @@ void changeSize(int w, int h) {
 	windowHeight=h;
 }
 
+/*
+** Function called when a mouse button is hit
+*/
+void MouseFunc(int button, int state, int x, int y)
+{
+  if (GLUT_LEFT_BUTTON == button)
+    left_click = state;
+  if (GLUT_RIGHT_BUTTON == button)
+    right_click = state;
+  xold = x;
+  yold = y;
+}
+
+/*
+** Function called when the mouse is moved
+*/
+void MotionFunc(int x, int y)
+{
+  if (GLUT_DOWN == left_click)
+    {
+      rotate_y = rotate_y + (y - yold) / 2;
+      rotate_x = rotate_x + (x - xold) / 2;
+      if (rotate_y > 90)
+	rotate_y = 90;
+      if (rotate_y < -90)
+	rotate_y = -90;
+      glutPostRedisplay ();
+    }
+  if (GLUT_DOWN == right_click)
+    {
+      rotate_x = rotate_x + (x - xold) / 5;
+      translate_z = translate_z + (yold - y) / 5;
+      if (translate_z < 20)
+	translate_z = 20;
+      if (translate_z > 80)
+	translate_z = 80;
+      glutPostRedisplay ();
+    }
+  xold = x;
+  yold = y;
+}
+
 //Procedura inicjująca biblotekę glut
 void initGLUT(int *argc, char** argv) {
 	glutInit(argc,argv); //Zainicjuj bibliotekę GLUT
@@ -219,6 +271,9 @@ void initGLUT(int *argc, char** argv) {
 	glutReshapeFunc(changeSize); //Zarejestruj procedurę changeSize jako procedurę obsługująca zmianę rozmiaru okna
 	glutDisplayFunc(displayFrame); //Zarejestruj procedurę displayFrame jako procedurę obsługująca odświerzanie okna
 	glutIdleFunc(nextFrame); //Zarejestruj procedurę nextFrame jako procedurę wywoływaną najczęścięj jak się da (animacja)
+
+	glutMouseFunc(&MouseFunc);
+	glutMotionFunc(&MotionFunc);
 }
 
 

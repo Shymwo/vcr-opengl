@@ -8,6 +8,7 @@
 #include "shaderprogram.h"
 #include "cube.h"
 #include "teapot.h"
+#include "water.h"
 
 using namespace glm;
 
@@ -67,6 +68,7 @@ int vertexCount=teapotVertexCount;
 GLuint tex0;
 GLuint tex1;
 
+Water *water;
 
 
 GLuint readTexture(char* filename) {
@@ -150,8 +152,11 @@ void displayFrame() {
 	matM=rotate(mat4(1.0f),rotate_y,vec3(1,0,0));
 	matM=rotate(matM,rotate_x,vec3(0,1,0));
 
+	//Narysuj wodę
+	water->displayWater();
+
 	//Narysuj obiekt
-	drawObject();
+	//drawObject();
 
 	//Tylny bufor na przedni
 	glutSwapBuffers();
@@ -172,7 +177,7 @@ void setupVBO() {
 	bufVertices=makeBuffer(vertices, vertexCount, sizeof(float)*4); //Współrzędne wierzchołków
 	bufColors=makeBuffer(colors, vertexCount, sizeof(float)*4);//Kolory wierzchołków
 	bufNormals=makeBuffer(normals, vertexCount, sizeof(float)*4);//Wektory normalne wierzchołków
-	bufTexCoords=makeBuffer(texCoords, vertexCount, sizeof(float)*2);//Wspołrzędne teksturowania
+	//bufTexCoords=makeBuffer(texCoords, vertexCount, sizeof(float)*2);//Wspołrzędne teksturowania
 }
 
 void assignVBOtoAttribute(char* attributeName, GLuint bufVBO, int variableSize) {
@@ -210,8 +215,17 @@ void nextFrame(void) {
 
 //Procedura wywoływana przy zmianie rozmiaru okna
 void changeSize(int w, int h) {
+	glMatrixMode(GL_PROJECTION);
+
+	glLoadIdentity ();
+	gluPerspective (15, w / (float) h, 0.1, 15);
+
 	//Ustawienie wymiarow przestrzeni okna
 	glViewport(0,0,w,h);
+
+	glMatrixMode(GL_MODELVIEW);
+	glutPostRedisplay();
+
 	//Zapamiętanie nowych wymiarów okna dla poprawnego wyliczania macierzy rzutowania
 	windowWidth=w;
 	windowHeight=h;
@@ -292,6 +306,8 @@ void initGLEW() {
 void initTextures() {
 	tex0=readTexture( (char *) "images/metal.tga");
 	tex1=readTexture( (char *) "images/metal_spec.tga");
+
+	water = new Water((char*)"images/reflection.jpg", (char*)"images/alpha.jpg");
 }
 
 //Wczytuje vertex shader i fragment shader i łączy je w program cieniujący
@@ -302,9 +318,14 @@ void setupShaders() {
 //procedura inicjująca różne sprawy związane z rysowaniem w OpenGL
 void initOpenGL() {
 	setupShaders();
-	setupVBO();
+	//setupVBO();
 	setupVAO();
 	glEnable(GL_DEPTH_TEST);
+	//  glEnable (GL_BLEND);
+	//  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	//	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
 }
 
 //Zwolnij pamięć karty graficznej z shaderów i programu cieniującego

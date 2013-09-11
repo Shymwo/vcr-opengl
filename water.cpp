@@ -1,21 +1,9 @@
 #include "water.h"
 
-float Water::z (const float x, const float y, const float t)
-{
-  const float x2 = x - 3;
-  const float y2 = y + 1;
-  const float xx = x2 * x2;
-  const float yy = y2 * y2;
-  return (2 * sinf (20 * sqrtf (xx + yy) - 4 * t) / 200);
-}
-
 /*
 ** Function to load a Jpeg file.
 */
-int		Water::load_texture (const char * filename,
-			      unsigned char * dest,
-			      const int format,
-			      const unsigned int size)
+int	Water::load_texture (const char * filename, unsigned char * dest, const int format, const unsigned int size)
 {
   FILE *fd;
   struct jpeg_decompress_struct cinfo;
@@ -46,8 +34,7 @@ int		Water::load_texture (const char * filename,
 
   while (cinfo.output_scanline < cinfo.output_height)
     {
-      line = dest +
-	(GL_RGB == format ? 3 * size : size) * cinfo.output_scanline;
+      line = dest + (GL_RGB == format ? 3 * size : size) * cinfo.output_scanline;
       jpeg_read_scanlines (&cinfo, &line, 1);
     }
   jpeg_finish_decompress (&cinfo);
@@ -55,20 +42,28 @@ int		Water::load_texture (const char * filename,
   return 0;
 }
 
+// Water animation function
+
+float Water::z (float x, float y, float t)
+{
+  x=x-3; y=y+1;
+  return (2 * sinf (20 * sqrtf (x*x + y*y) - 4 * t) / 200);
+}
+
 // Water Texture loading
 
 Water::Water (char* reflection, char* alpha) {
-	unsigned char total_texture[3 * 256 * 256];
+	unsigned char total_texture[4 * 256 * 256];
 	unsigned char alpha_texture[256 * 256];
 	unsigned char caustic_texture[3 * 256 * 256];
-	unsigned int i;
 
 	/* Texture loading  */
 	glGenTextures (1, &texture);
-	if (load_texture (alpha, alpha_texture, GL_ALPHA, 256) != 0 ||
-	  load_texture (reflection, caustic_texture, GL_RGB, 256) != 0)
-	return;
-	for (i = 0; i < 256 * 256; i++)
+
+	load_texture (alpha, alpha_texture, GL_ALPHA, 256);
+	load_texture (reflection, caustic_texture, GL_RGB, 256);
+
+	for (int i = 0; i < 256 * 256; i++)
 	{
 	  total_texture[4 * i] = caustic_texture[3 * i];
 	  total_texture[4 * i + 1] = caustic_texture[3 * i + 1];

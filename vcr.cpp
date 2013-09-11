@@ -67,6 +67,7 @@ int vertexCount=teapotVertexCount;
 
 GLuint tex0;
 GLuint tex1;
+GLuint water_tex;
 
 Water *water;
 
@@ -307,7 +308,8 @@ void initTextures() {
 	tex0=readTexture( (char *) "images/metal.tga");
 	tex1=readTexture( (char *) "images/metal_spec.tga");
 
-	water = new Water((char*)"images/reflection.jpg", (char*)"images/alpha.jpg");
+	water_tex = readTexture ( (char *) "images/reflection.tga");
+	water = new Water(water_tex);
 }
 
 //Wczytuje vertex shader i fragment shader i łączy je w program cieniujący

@@ -1,47 +1,5 @@
 #include "water.h"
 
-/*
-** Function to load a Jpeg file.
-*/
-int	Water::load_texture (const char * filename, unsigned char * dest, const int format, const unsigned int size)
-{
-  FILE *fd;
-  struct jpeg_decompress_struct cinfo;
-  struct jpeg_error_mgr jerr;
-  unsigned char * line;
-
-  cinfo.err = jpeg_std_error (&jerr);
-  jpeg_create_decompress (&cinfo);
-
-  if (0 == (fd = fopen(filename, "rb")))
-    return 1;
-
-  jpeg_stdio_src (&cinfo, fd);
-  jpeg_read_header (&cinfo, TRUE);
-  if ((cinfo.image_width != size) || (cinfo.image_height != size))
-    return 1;
-
-  if (GL_RGB == format)
-    {
-      if (cinfo.out_color_space == JCS_GRAYSCALE)
-	return 1;
-    }
-  else
-    if (cinfo.out_color_space != JCS_GRAYSCALE)
-      return 1;
-
-  jpeg_start_decompress (&cinfo);
-
-  while (cinfo.output_scanline < cinfo.output_height)
-    {
-      line = dest + (GL_RGB == format ? 3 * size : size) * cinfo.output_scanline;
-      jpeg_read_scanlines (&cinfo, &line, 1);
-    }
-  jpeg_finish_decompress (&cinfo);
-  jpeg_destroy_decompress (&cinfo);
-  return 0;
-}
-
 // Water animation function
 
 float Water::z (float x, float y, float t)
@@ -52,31 +10,11 @@ float Water::z (float x, float y, float t)
 
 // Water Texture loading
 
-Water::Water (char* reflection, char* alpha) {
-	unsigned char total_texture[4 * 256 * 256];
-	unsigned char alpha_texture[256 * 256];
-	unsigned char caustic_texture[3 * 256 * 256];
+Water::Water (GLuint tex) {
+	texture = tex;
 
-	/* Texture loading  */
-	glGenTextures (1, &texture);
-
-	load_texture (alpha, alpha_texture, GL_ALPHA, 256);
-	load_texture (reflection, caustic_texture, GL_RGB, 256);
-
-	for (int i = 0; i < 256 * 256; i++)
-	{
-	  total_texture[4 * i] = caustic_texture[3 * i];
-	  total_texture[4 * i + 1] = caustic_texture[3 * i + 1];
-	  total_texture[4 * i + 2] = caustic_texture[3 * i + 2];
-	  total_texture[4 * i + 3] = alpha_texture[i];
-	}
-	glBindTexture (GL_TEXTURE_2D, texture);
-	gluBuild2DMipmaps (GL_TEXTURE_2D, GL_RGBA, 256, 256, GL_RGBA,
-			 GL_UNSIGNED_BYTE,  total_texture);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+//	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+//	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glEnable (GL_TEXTURE_GEN_S);
 	glEnable (GL_TEXTURE_GEN_T);
 	glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);

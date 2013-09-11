@@ -9,19 +9,19 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include <string.h>
+#include "tga.h"
 
 #define	RESOLUTION 64
 
 class Water {
 private:
 	GLuint texture;
-	int	load_texture (const char * filename, unsigned char * dest, const int format, const unsigned int size);
 	float z(float x, float y, float t);
 public:
 	float surface[6 * RESOLUTION * (RESOLUTION + 1)];
 	float normal[6 * RESOLUTION * (RESOLUTION + 1)];
 
-	Water(char* reflection, char* alpha);
+	Water(GLuint tex);
 	void displayWater(void);
 };
 

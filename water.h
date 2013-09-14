@@ -23,8 +23,8 @@ private:
 	GLuint texture;
 	float z(float x, float y, float t);
 public:
-	float vertices[6 * RESOLUTION * (RESOLUTION + 1)];
-	float normals[6 * RESOLUTION * (RESOLUTION + 1)];
+	vec3 vertices[2 * RESOLUTION * (RESOLUTION + 1)];
+	vec3 normals[2 * RESOLUTION * (RESOLUTION + 1)];
 
 	Water(GLuint tex);
 	void displayWater(void);

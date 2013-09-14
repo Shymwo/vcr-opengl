@@ -57,6 +57,11 @@ float *normals=teapotNormals2;
 float *texCoords=teapotTexCoords;
 int vertexCount=teapotVertexCount;
 
+//Woda
+float *vwater;
+float *nwater;
+float *twater;
+
 GLuint tex0;
 GLuint tex1;
 GLuint water_tex;

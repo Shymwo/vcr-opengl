@@ -9,17 +9,22 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include <string.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "tga.h"
 
-#define	RESOLUTION 64
+using namespace glm;
+
+#define	RESOLUTION 32
 
 class Water {
 private:
 	GLuint texture;
 	float z(float x, float y, float t);
 public:
-	float surface[6 * RESOLUTION * (RESOLUTION + 1)];
-	float normal[6 * RESOLUTION * (RESOLUTION + 1)];
+	float vertices[6 * RESOLUTION * (RESOLUTION + 1)];
+	float normals[6 * RESOLUTION * (RESOLUTION + 1)];
 
 	Water(GLuint tex);
 	void displayWater(void);

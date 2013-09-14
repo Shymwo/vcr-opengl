@@ -6,7 +6,7 @@ in vec4 iV; //interpolowany wektor do obserwatora
 in vec4 iN; //interpolowany wektor normalny
 in vec4 iL; //interpolowany wektor do światła
 in vec4 iC; //interpolowany kolor (obecnie ignorowany)
-//in vec2 iTexCoords0; //interpolowane współrzędne teksturowania
+in vec2 iTexCoords0; //interpolowane współrzędne teksturowania
 
 
 uniform sampler2D textureMap0;
@@ -23,8 +23,8 @@ void main(void) {
 	float nl=max(0,dot(eyeL,eyeN));
 	float rv=pow(max(0,dot(eyeR,eyeV)),shininess);
 
-	//vec4 texColor0=texture(textureMap0,iTexCoords0);
-	//vec4 texColor1=texture(textureMap1,iTexCoords0);//!! korzystamy z tych samych współrzędnnych teksturowania, ale oczywiście nie zawsze tak musi być
+	vec4 texColor0=texture(textureMap0,iTexCoords0);
+	vec4 texColor1=texture(textureMap1,iTexCoords0);//!! korzystamy z tych samych współrzędnnych teksturowania, ale oczywiście nie zawsze tak musi być
 
 	vec4 La=vec4(0,0,0,0); //kolor światła otoczenia
 	vec4 Ma=vec4(0,0,0,0); //kolor materiału dla światła otoczenia

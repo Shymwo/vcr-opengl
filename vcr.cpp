@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "tga.h"
 #include "shaderprogram.h"
-#include "cube.h"
 #include "teapot.h"
 #include "water.h"
 
@@ -50,13 +49,6 @@ GLuint bufTexCoords; //Uchwyt na bufor VBO przechowujący tablicę współrzędn
 
 //"Model" który rysujemy. Dane wskazywane przez poniższe wskaźniki i o zadanej liczbie wierzchołków są później wysowane przez program.
 //W programie są dwa modele, z których jeden można wybrać komentując/odkomentowując jeden z poniższych fragmentów.
-
-//Kostka
-/*float *vertices=cubeVertices;
-float *colors=cubeColors;
-float *normals=cubeNormals;
-float *texCoords=cubeTexCoords;
-int vertexCount=cubeVertexCount;*/
 
 //Czajnik
 float *vertices=teapotVertices;
@@ -320,13 +312,9 @@ void setupShaders() {
 //procedura inicjująca różne sprawy związane z rysowaniem w OpenGL
 void initOpenGL() {
 	setupShaders();
-	//setupVBO();
+	setupVBO();
 	setupVAO();
 	glEnable(GL_DEPTH_TEST);
-	//  glEnable (GL_BLEND);
-	//  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	//	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 }
 
@@ -349,6 +337,7 @@ void freeVAO() {
 void freeTextures() {
 	glDeleteTextures(1,&tex0);
 	glDeleteTextures(1,&tex1);
+	glDeleteTextures(1,&water_tex);
 }
 
 int main(int argc, char** argv) {

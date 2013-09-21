@@ -58,16 +58,15 @@ float *texCoords=teapotTexCoords;
 int vertexCount=teapotVertexCount;
 
 //Woda
-float *vwater;
-float *nwater;
-float *twater;
+Water *water;
+
+vec3 *vwater;
+vec3 *nwater;
+vec2 *twater;
 
 GLuint tex0;
 GLuint tex1;
 GLuint water_tex;
-
-Water *water;
-
 
 GLuint readTexture(char* filename) {
 	GLuint tex;
@@ -94,6 +93,81 @@ GLuint readTexture(char* filename) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT);
 	return tex;
 }
+
+// -- START WATER PROCEDURES --
+
+static float rw_x = 105;
+static float rw_z = 330;
+
+void drawWater() {
+	shaderProgram->use();
+
+	glUniformMatrix4fv(shaderProgram->getUniformLocation((char *)"P"),1, false, value_ptr(matP));
+	glUniformMatrix4fv(shaderProgram->getUniformLocation((char *)"V"),1, false, value_ptr(matV));
+	glUniformMatrix4fv(shaderProgram->getUniformLocation((char *)"M"),1, false, value_ptr(matM));
+	glUniform1i(shaderProgram->getUniformLocation((char *)"textureMap0"),0); //skojarzenie zmiennej jednorodnej textureMap0 z zerową jednostką teksturującą
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D,water_tex);
+
+	glBindVertexArray(vao);
+
+	const unsigned int length = 2 * (RESOLUTION + 1);
+	for (int i = 0; i < RESOLUTION; i++)
+		glDrawArrays (GL_TRIANGLE_STRIP, i * length, length);
+
+	glBindVertexArray(0);
+}
+
+void displayWaterFrame() {
+	glClearColor(0.6,0.7,1,1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	matP=perspective(translate_z, (float)windowWidth/(float)windowHeight, 1.0f, 100.0f);
+	matV=lookAt(vec3(0.0f,0.0f,4.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
+
+//	  glTranslatef(0, 0, -4);
+
+	matM=rotate(mat4(1.0f), rw_x,vec3(1,0,0));
+	matM=rotate(matM,rw_z,vec3(0,0,1));
+	matM=rotate(matM,rotate_y,vec3(1,0,0));
+	matM=rotate(matM,rotate_x,vec3(0,1,0));
+
+	glLoadIdentity();
+
+	drawWater();
+
+	glEnable (GL_TEXTURE_2D);
+
+	glutSwapBuffers();
+}
+
+GLuint makeBuffer(void *data, int vertexCount, int vertexSize);
+
+void setupwVBO() {
+	bufVertices=makeBuffer(vwater, 2 * RESOLUTION * (RESOLUTION + 1), sizeof(float)*3);
+	bufNormals=makeBuffer(nwater, 2 * RESOLUTION * (RESOLUTION + 1), sizeof(float)*3);
+	bufTexCoords=makeBuffer(twater, 2 * RESOLUTION * (RESOLUTION + 1), sizeof(float)*2);
+}
+
+void assignVBOtoAttribute(char* attributeName, GLuint bufVBO, int variableSize);
+
+void setupwVAO() {
+	//Wygeneruj uchwyt na VAO i zapisz go do zmiennej globalnej
+	glGenVertexArrays(1,&vao);
+
+	//Uaktywnij nowo utworzony VAO
+	glBindVertexArray(vao);
+
+	assignVBOtoAttribute((char *)"vertex",bufVertices,3); //"vertex" odnosi się do deklaracji "in vec4 vertex;" w vertex shaderze
+	assignVBOtoAttribute((char *)"color",bufColors,3); //"color" odnosi się do deklaracji "in vec4 color;" w vertex shaderze
+	assignVBOtoAttribute((char *)"normal",bufNormals,3); //"normal" odnosi się do deklaracji "in vec4 normal;" w vertex shaderze
+	assignVBOtoAttribute((char *)"texCoords0",bufTexCoords,2); //"texCoords0" odnosi się do deklarachu "in vec2 texCoords0;" w vertex shaderze
+
+	glBindVertexArray(0);
+}
+
+// -- END WATER PROCEDURES --
 
 //Procedura rysująca jakiś obiekt. Ustawia odpowiednie parametry dla vertex shadera i rysuje.
 void drawObject() {
@@ -193,9 +267,9 @@ void setupVAO() {
 	//Uaktywnij nowo utworzony VAO
 	glBindVertexArray(vao);
 
-	assignVBOtoAttribute((char *)"vertex",bufVertices,4); //"vertex" odnosi się do deklaracji "in vec4 vertex;" w vertex shaderze
-	assignVBOtoAttribute((char *)"color",bufColors,4); //"color" odnosi się do deklaracji "in vec4 color;" w vertex shaderze
-	assignVBOtoAttribute((char *)"normal",bufNormals,4); //"normal" odnosi się do deklaracji "in vec4 normal;" w vertex shaderze
+	assignVBOtoAttribute((char *)"vertex",bufVertices,3); //"vertex" odnosi się do deklaracji "in vec4 vertex;" w vertex shaderze
+	assignVBOtoAttribute((char *)"color",bufColors,3); //"color" odnosi się do deklaracji "in vec4 color;" w vertex shaderze
+	assignVBOtoAttribute((char *)"normal",bufNormals,3); //"normal" odnosi się do deklaracji "in vec4 normal;" w vertex shaderze
 	assignVBOtoAttribute((char *)"texCoords0",bufTexCoords,2); //"texCoords0" odnosi się do deklarachu "in vec2 texCoords0;" w vertex shaderze
 
 	glBindVertexArray(0);
@@ -208,6 +282,9 @@ void nextFrame(void) {
 	lastTime=actTime;
 	anglee+=speed*interval/1000.0;
 	if (anglee>360) anglee-=360;
+	water->displayWater();
+	setupwVBO();
+	setupwVAO();
 	glutPostRedisplay();
 }
 
@@ -281,7 +358,7 @@ void initGLUT(int *argc, char** argv) {
 	glutCreateWindow("Voyage Century Reborn"); //Utwórz okno i nadaj mu tytuł
 
 	glutReshapeFunc(changeSize); //Zarejestruj procedurę changeSize jako procedurę obsługująca zmianę rozmiaru okna
-	glutDisplayFunc(displayFrame); //Zarejestruj procedurę displayFrame jako procedurę obsługująca odświerzanie okna
+	glutDisplayFunc(displayWaterFrame); //Zarejestruj procedurę displayFrame jako procedurę obsługująca odświerzanie okna
 	glutIdleFunc(nextFrame); //Zarejestruj procedurę nextFrame jako procedurę wywoływaną najczęścięj jak się da (animacja)
 
 	glutMouseFunc(&MouseFunc);
@@ -307,6 +384,10 @@ void initTextures() {
 
 	water_tex = readTexture ( (char *) "images/reflection.tga");
 	water = new Water(water_tex);
+	water->displayWater();
+	vwater = water->vertices;
+	nwater = water->normals;
+	twater = water->texCoords;
 }
 
 //Wczytuje vertex shader i fragment shader i łączy je w program cieniujący
@@ -317,8 +398,8 @@ void setupShaders() {
 //procedura inicjująca różne sprawy związane z rysowaniem w OpenGL
 void initOpenGL() {
 	setupShaders();
-	setupVBO();
-	setupVAO();
+	setupwVBO();
+	setupwVAO();
 	glEnable(GL_DEPTH_TEST);
 
 }
@@ -348,8 +429,9 @@ void freeTextures() {
 int main(int argc, char** argv) {
 	initGLUT(&argc,argv);
 	initGLEW();
-	initOpenGL();
+
 	initTextures();
+	initOpenGL();
 
 	glutMainLoop();
 

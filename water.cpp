@@ -25,19 +25,15 @@ Water::Water (GLuint tex) {
 */
 void	Water::displayWater (void)
 {
-  const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
   const float delta = 2. / RESOLUTION;
-  const unsigned int length = 2 * (RESOLUTION + 1);
   unsigned int i,j;
   float x,y,l;
   unsigned int indice,preindice;
+  const float t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
 
   vec3 v1,v2,v3,va,vb,n;
 
-  glLoadIdentity ();
-  glTranslatef(0, 0, -4);
-  glRotatef(105, 1, 0, 0);
-  glRotatef(330,0,0,1);
+//  glLoadIdentity ();
 
   /* Vertices */
   for (j = 0; j < RESOLUTION; j++) {
@@ -92,17 +88,34 @@ void	Water::displayWater (void)
 	  }
   }
 
+  //texture coords
+  for (j = 0; j < RESOLUTION; j++) {
+	  y = (j + 1) * delta - 1;
+	  for (i = 0; i <= RESOLUTION; i++) {
+		indice = 2 * (i + j * (RESOLUTION + 1));
+
+		//some code here
+		x = i * delta - 1;
+		texCoords[indice + 1] = vec2(0.5, 0.5);
+
+		if (j != 0) {
+			/* Values were computed during the previous loop */
+			preindice = 2 * (i + (j - 1) * (RESOLUTION + 1));
+			texCoords[indice] = texCoords[preindice + 1];
+		} else {
+			texCoords[indice] = texCoords[indice + 1];
+		}
+	  }
+  }
+
   /* The water */
 
-  glEnable (GL_TEXTURE_2D);
+//  glEnable (GL_TEXTURE_2D);
 //  glColor3f (1, 1, 1);
-  glEnableClientState (GL_NORMAL_ARRAY);
-  glEnableClientState (GL_VERTEX_ARRAY);
-  glNormalPointer (GL_FLOAT, 0, normals);
-  glVertexPointer (3, GL_FLOAT, 0, vertices);
-
-  for (i = 0; i < RESOLUTION; i++)
-    glDrawArrays (GL_TRIANGLE_STRIP, i * length, length);
+//  glEnableClientState (GL_NORMAL_ARRAY);
+//  glEnableClientState (GL_VERTEX_ARRAY);
+//  glNormalPointer (GL_FLOAT, 0, normals);
+//  glVertexPointer (3, GL_FLOAT, 0, vertices);
 
   /* End */
 //  glFlush ();

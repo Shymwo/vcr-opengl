@@ -25,6 +25,7 @@ private:
 public:
 	vec3 vertices[2 * RESOLUTION * (RESOLUTION + 1)];
 	vec3 normals[2 * RESOLUTION * (RESOLUTION + 1)];
+	vec2 texCoords[2 * RESOLUTION * (RESOLUTION + 1)];
 
 	Water(GLuint tex);
 	void displayWater(void);

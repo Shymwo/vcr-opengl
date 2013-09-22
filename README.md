@@ -2,13 +2,18 @@ vcr-opengl
 ==========
 
 TODO:
- - rendering wody
- - statek - galera - znalezienie i załadowanie modelu
- - oteksturowanie modeli
  - rendering poruszających się wioseł
- - odpowiednie oświetlenie itp.
+
+EWENTUALNIE:
+ - odpowiednie oświetlenie i cieniowane
+ - poprawa teksturowania
+ - poprawa wydajności
 
 DONE:
  - przykładowe tło
- - obrót kamerą - myszka? oddalenie, zbliżenie - strzałki?
+ - kamera
  - repozytorium, szkielet projektu
+ - woda
+ - załadowanie modelu statku
+ - oteksturowanie
+

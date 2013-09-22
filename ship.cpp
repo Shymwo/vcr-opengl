@@ -3,15 +3,15 @@
 //Statek
 #define svNumber 1037328
 vector<vec3> verticess;
-vector<vec2> uvs;
+vector<vec3> uvs;
 vec3 sVertices[svNumber];
-vec2 sTexCoords[svNumber];
+vec3 sTexCoords[svNumber];
 
 // load OBJ model file
-bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec2> &out_uvs){
+bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec3> &out_uvs){
 	vector< unsigned int > vertexIndices, uvIndices;
 	vector< vec3 > temp_vertices;
-	vector< vec2 > temp_uvs;
+	vector< vec3 > temp_uvs;
 
 	FILE * file = fopen(path, "r");
 	if( file == NULL ){
@@ -34,8 +34,8 @@ bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec2> &out_
     				fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
     				temp_vertices.push_back(vertex);
 			}else if ( strcmp( lineHeader, "vt" ) == 0 ){
-    				vec2 uv;
-   				 fscanf(file, "%f %f\n", &uv.x, &uv.y);
+    				vec3 uv;
+   				 fscanf(file, "%f %f %f\n", &uv.x, &uv.y, &uv.z);
     				temp_uvs.push_back(uv);
 			}else if ( strcmp( lineHeader, "f" ) == 0 ){
     				string vertex1, vertex2, vertex3;
@@ -50,7 +50,7 @@ bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec2> &out_
     				vertexIndices.push_back(vertexIndex[2]);
     				uvIndices    .push_back(uvIndex[0]);
     				uvIndices    .push_back(uvIndex[1]);
-    				//uvIndices    .push_back(uvIndex[2]);
+    				uvIndices    .push_back(uvIndex[2]);
 			}
 	}
 	// For each vertex of each triangle
@@ -61,7 +61,7 @@ bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec2> &out_
 	}
 	for( unsigned int i=0; i<uvIndices.size(); i++ ){
 		unsigned int uvIndex = uvIndices[i];
-		vec2 uv = temp_uvs[ uvIndex-1 ];
+		vec3 uv = temp_uvs[ uvIndex-1 ];
 		out_uvs.push_back(uv);
 	}
 
@@ -69,7 +69,7 @@ bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec2> &out_
 }
 
 void loadShip() {
-	loadOBJ("boat.obj", verticess, uvs);
+	loadOBJ("Sailboat.obj", verticess, uvs);
 //	sVertices = new vec3[verticess.size()];
 //	sTexCoords = new vec3[uvs.size()];
 	for (int i=0; i<svNumber;i++) {
@@ -82,6 +82,6 @@ void drawShip() {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glVertexPointer(3,GL_FLOAT,0,sVertices);
-	glTexCoordPointer(2,GL_FLOAT,0,sTexCoords);
+	glTexCoordPointer(3,GL_FLOAT,0,sTexCoords);
 	glDrawArrays(GL_TRIANGLES,0,svNumber);
 }

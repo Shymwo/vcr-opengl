@@ -76,6 +76,10 @@ void updateNormals(float t) {
 */
 void displayWater (float t)
 {
+	glEnable (GL_TEXTURE_GEN_S);
+	glEnable (GL_TEXTURE_GEN_T);
+	glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 
   updateVertices(t);
   updateNormals(t);
@@ -87,5 +91,8 @@ void displayWater (float t)
 
   for (i = 0; i < RESOLUTION; i++)
     glDrawArrays (GL_TRIANGLE_STRIP, i * leng, leng);
+
+	glDisable (GL_TEXTURE_GEN_S);
+	glDisable (GL_TEXTURE_GEN_T);
 
 }

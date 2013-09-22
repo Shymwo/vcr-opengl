@@ -29,8 +29,9 @@ static float rotate_x = 60;
 static float rotate_y = 30;
 static float translate_z = 40;
 
-//Woda
+//textures
 GLuint wTexture;
+GLuint sTexture;
 
 GLuint readTexture(char* filename) {
 	GLuint tex;
@@ -84,13 +85,12 @@ void displayFrame() {
 	glBindTexture(GL_TEXTURE_2D,wTexture);
 	displayWater(t);
 
-	//Narysuj statek
 
-	mat4 S = scale(mat4(1.0f), vec3(0.2,0.2,0.2));
+	//Narysuj statek
+	mat4 S = scale(mat4(1.0f), vec3(0.0002,0.0002,0.0002));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(value_ptr(V*M*S));
-
-	glBindTexture(GL_TEXTURE_2D,GL_ZERO);
+	glBindTexture(GL_TEXTURE_2D,sTexture);
 	drawShip();
 
 	//Tylny bufor na przedni
@@ -143,8 +143,8 @@ void MotionFunc(int x, int y)
     {
       rotate_x = rotate_x + (x - xold) / 5;
       translate_z = translate_z + (yold - y) / 5;
-      if (translate_z < 20)
-	translate_z = 20;
+      if (translate_z < 0)
+	translate_z = 0;
       if (translate_z > 80)
 	translate_z = 80;
       glutPostRedisplay ();
@@ -187,14 +187,14 @@ void initOpenGL() {
 void initTextures() {
 	// Water texture
 	wTexture = readTexture ( (char *) "images/reflection.tga");
-	glEnable (GL_TEXTURE_GEN_S);
-	glEnable (GL_TEXTURE_GEN_T);
-	glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-	glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+	// Ship texture
+	sTexture = readTexture ( (char *) "images/woodalt.tga");
 }
 
 void freeTextures() {
 	glDeleteTextures(1,&wTexture);
+	glDeleteTextures(1,&sTexture);
 }
 
 void initModels() {

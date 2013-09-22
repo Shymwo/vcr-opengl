@@ -1,8 +1,8 @@
 LIBS=-lGL -lglut -lGLEW -ljpeg
 CC=g++
 
-SOURCES=vcr.cpp tga.cpp shaderprogram.cpp water.cpp
-HEADERS=tga.h teapot.h shaderprogram.h water.h
+SOURCES=tga.cpp water.cpp ship.cpp vcr.cpp
+HEADERS=tga.h water.h ship.h
 OBJECTS=$(SOURCES:.cpp=.o)
 
 all: vcr

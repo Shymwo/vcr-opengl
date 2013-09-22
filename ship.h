@@ -1,18 +1,19 @@
-#ifndef WATER_H
-#define WATER_H
+#ifndef SHIP_H_
+#define SHIP_H_
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stdio.h>
+#include <vector>
+#include <string>
 
+using namespace std;
 using namespace glm;
 
-void displayWater(float t);
+void loadShip();
+void drawShip();
 
 #endif

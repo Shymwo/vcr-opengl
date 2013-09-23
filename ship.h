@@ -16,4 +16,7 @@ using namespace glm;
 void loadShip();
 void drawShip();
 
+void loadPaddle();
+void drawPaddle();
+
 #endif

@@ -19,6 +19,7 @@ int windowHeight=400;
 
 //Zmienne do animacji
 float t;
+float anglee=0.0;
 
 //mouse
 static int left_click = GLUT_UP;
@@ -32,6 +33,7 @@ static float translate_z = 40;
 //textures
 GLuint wTexture;
 GLuint sTexture;
+GLuint pTexture;
 
 GLuint readTexture(char* filename) {
 	GLuint tex;
@@ -65,33 +67,73 @@ void displayFrame() {
 	glClearColor(0.6,0.7,1,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	mat4 P,V,M,Mp,Ml,Ma,Mb,Mc,S,T;
+
 	//Wylicz macierz rzutowania
-	mat4 P=perspective(translate_z, (float)windowWidth/(float)windowHeight, 1.0f, 100.0f);
+	P=perspective(translate_z, (float)windowWidth/(float)windowHeight, 1.0f, 100.0f);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 
 	//Wylicz macierz widoku
-	mat4 V=lookAt(vec3(0.0f,0.0f,4.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
+	V=lookAt(vec3(0.0f,0.0f,4.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
 
 	//Wylicz macierz modelu
-	mat4 M=rotate(mat4(1.0f),rotate_y,vec3(1,0,0));
+	M=rotate(mat4(1.0f),rotate_y,vec3(1,0,0));
 	M=rotate(M,rotate_x,vec3(0,1,0));
+	T=translate(mat4(1.0f),vec3(0,-0.1,0));
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(value_ptr(V*M));
+	glLoadMatrixf(value_ptr(V*M*T));
 
 	//Narysuj wodę
 	glBindTexture(GL_TEXTURE_2D,wTexture);
 	displayWater(t);
 
-
 	//Narysuj statek
-	mat4 S = scale(mat4(1.0f), vec3(0.0002,0.0002,0.0002));
+	S = scale(mat4(1.0f), vec3(0.0002,0.0002,0.0002));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(value_ptr(V*M*S));
-	glBindTexture(GL_TEXTURE_2D,sTexture);
+	glBindTexture(GL_TEXTURE_2D,pTexture);
 	drawShip();
+
+	//Narysuj wiosła
+	glBindTexture(GL_TEXTURE_2D,sTexture);
+	glMatrixMode(GL_MODELVIEW);
+	S = scale(mat4(1.0f), vec3(0.02,0.02,0.02));
+	Ma=rotate(mat4(1.0f),30*sinf(anglee),vec3(1,0,0));
+
+	//z prawej strony
+	Mp=rotate(M,70.0f,vec3(0,0,1));
+	Mb=rotate(mat4(1.0f),15*sinf(anglee+90),vec3(0,0,1));
+
+	T = translate(mat4(1.0f), vec3(0,0,-10));
+	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
+	drawPaddle();
+
+	T = translate(mat4(1.0f), vec3(0,0,10));
+	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
+	drawPaddle();
+
+	T = translate(mat4(1.0f), vec3(0,0,30));
+	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
+	drawPaddle();
+
+	//z lewej strony
+	Ml=rotate(M,70.0f,vec3(0,0,-1));
+	Mb=rotate(mat4(1.0f),15*sinf(anglee+90),vec3(0,0,-1));
+
+	T = translate(mat4(1.0f), vec3(0,0,-10));
+	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
+	drawPaddle();
+
+	T = translate(mat4(1.0f), vec3(0,0,10));
+	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
+	drawPaddle();
+
+	T = translate(mat4(1.0f), vec3(0,0,30));
+	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
+	drawPaddle();
 
 	//Tylny bufor na przedni
 	glutSwapBuffers();
@@ -100,6 +142,10 @@ void displayFrame() {
 //Procedura uruchamiana okresowo. Robi animację.
 void nextFrame(void) {
 	t = glutGet (GLUT_ELAPSED_TIME) / 1000.;
+	if (anglee<180)
+		anglee+=0.1;
+	else
+		anglee=0.0;
 
 	glutPostRedisplay();
 }
@@ -143,10 +189,10 @@ void MotionFunc(int x, int y)
     {
       rotate_x = rotate_x + (x - xold) / 5;
       translate_z = translate_z + (yold - y) / 5;
-      if (translate_z < 0)
-	translate_z = 0;
-      if (translate_z > 80)
-	translate_z = 80;
+      if (translate_z < 2)
+	translate_z = 2;
+      if (translate_z > 60)
+	translate_z = 60;
       glutPostRedisplay ();
     }
   xold = x;
@@ -190,15 +236,18 @@ void initTextures() {
 
 	// Ship texture
 	sTexture = readTexture ( (char *) "images/woodalt.tga");
+	pTexture = readTexture ( (char *) "images/wood2alt.tga");
 }
 
 void freeTextures() {
 	glDeleteTextures(1,&wTexture);
 	glDeleteTextures(1,&sTexture);
+	glDeleteTextures(1,&pTexture);
 }
 
 void initModels() {
 	loadShip();
+	loadPaddle();
 }
 
 int main(int argc, char** argv) {

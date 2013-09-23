@@ -1,7 +1,7 @@
 #include "water.h"
 
-#define	RESOLUTION 32
-#define SIZE 4.
+#define	RESOLUTION 64
+#define SIZE 8.
 
 vec3 wVertices[2 * RESOLUTION * (RESOLUTION + 1)];
 vec3 wNormals[2 * RESOLUTION * (RESOLUTION + 1)];
@@ -18,7 +18,7 @@ vec3 v1,v2,v3,va,vb,n;
 
 float z (float x, float y, float t)
 {
-  x = x-1; y = y-3;
+  x=x-2; y=y-4;
   return (2 * sinf (20 * sqrtf (pow(x,2) + pow(y,2)) - 4 * t) / 200);
 }
 

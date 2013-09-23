@@ -2,10 +2,17 @@
 
 //Statek
 #define svNumber 1037328
+#define svNumber2 8532
+
 vector<vec3> verticess;
 vector<vec3> uvs;
 vec3 sVertices[svNumber];
 vec3 sTexCoords[svNumber];
+
+vector<vec3> verticess2;
+vector<vec3> uvs2;
+vec3 pVertices[svNumber2];
+vec2 pTexCoords[svNumber2];
 
 // load OBJ model file
 bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec3> &out_uvs){
@@ -70,11 +77,17 @@ bool loadOBJ(const char * path, vector <vec3> &out_vertices, vector <vec3> &out_
 
 void loadShip() {
 	loadOBJ("Sailboat.obj", verticess, uvs);
-//	sVertices = new vec3[verticess.size()];
-//	sTexCoords = new vec3[uvs.size()];
 	for (int i=0; i<svNumber;i++) {
 		sVertices[i] = verticess[i];
 		sTexCoords[i] = uvs[i];
+	}
+}
+
+void loadPaddle() {
+	loadOBJ("paddle.obj", verticess2, uvs2);
+	for (int i=0; i<svNumber2;i++) {
+		pVertices[i] = verticess2[i];
+		pTexCoords[i] = vec2(uvs2[i].x, uvs2[i].y);
 	}
 }
 
@@ -84,4 +97,12 @@ void drawShip() {
 	glVertexPointer(3,GL_FLOAT,0,sVertices);
 	glTexCoordPointer(3,GL_FLOAT,0,sTexCoords);
 	glDrawArrays(GL_TRIANGLES,0,svNumber);
+}
+
+void drawPaddle() {
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glVertexPointer(3,GL_FLOAT,0,pVertices);
+	glTexCoordPointer(2,GL_FLOAT,0,pTexCoords);
+	glDrawArrays(GL_TRIANGLES,0,svNumber2);
 }

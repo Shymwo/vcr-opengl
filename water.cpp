@@ -95,4 +95,7 @@ void displayWater (float t)
 	glDisable (GL_TEXTURE_GEN_S);
 	glDisable (GL_TEXTURE_GEN_T);
 
+	glDisableClientState (GL_NORMAL_ARRAY);
+	glDisableClientState (GL_VERTEX_ARRAY);
+
 }

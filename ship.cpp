@@ -97,6 +97,9 @@ void drawShip() {
 	glVertexPointer(3,GL_FLOAT,0,sVertices);
 	glTexCoordPointer(3,GL_FLOAT,0,sTexCoords);
 	glDrawArrays(GL_TRIANGLES,0,svNumber);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void drawPaddle() {
@@ -105,4 +108,7 @@ void drawPaddle() {
 	glVertexPointer(3,GL_FLOAT,0,pVertices);
 	glTexCoordPointer(2,GL_FLOAT,0,pTexCoords);
 	glDrawArrays(GL_TRIANGLES,0,svNumber2);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }

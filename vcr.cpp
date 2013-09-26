@@ -34,6 +34,7 @@ static float translate_z = 40;
 GLuint wTexture;
 GLuint sTexture;
 GLuint pTexture;
+GLuint bTexture;;
 
 GLuint readTexture(char* filename) {
 	GLuint tex;
@@ -61,11 +62,50 @@ GLuint readTexture(char* filename) {
 	return tex;
 }
 
+void background()
+{
+	float bVertex[] = {
+		-1.0f,-1.0f, 1.0f,-1.0f, 1.0f,1.0f, -1.0f,1.0f,
+	};
+
+	float bTexCoord[] = {
+		1.0f,1.0f, 0.0f,1.0f, 0.0f,0.0f, 1.0f,0.0f,
+	};
+
+	glDisable(GL_DEPTH_TEST);
+
+	// Background Image
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glBindTexture(GL_TEXTURE_2D, bTexture);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glVertexPointer(2,GL_FLOAT,0,bVertex);
+	glTexCoordPointer(2,GL_FLOAT,0,bTexCoord);
+
+	glDrawArrays(GL_QUADS,0,4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	// End Background Image
+
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+}
+
 //Procedura rysująca
 void displayFrame() {
 	//Wyczyść bufor kolorów i bufor głębokości
-	glClearColor(0.6,0.7,1,1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(0.6,0.7,1,1);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	background();
 
 	mat4 P,V,M,Mp,Ml,Ma,Mb,Mc,S,T;
 
@@ -76,7 +116,7 @@ void displayFrame() {
 	glLoadMatrixf(value_ptr(P));
 
 	//Wylicz macierz widoku
-	V=lookAt(vec3(0.0f,0.0f,4.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
+	V=lookAt(vec3(0.0f,0.0f,5.0f),vec3(0.0f,0.0f,0.0f),vec3(0.0f,1.0f,0.0f));
 
 	//Wylicz macierz modelu
 	M=rotate(mat4(1.0f),rotate_y,vec3(1,0,0));
@@ -237,12 +277,15 @@ void initTextures() {
 	// Ship texture
 	sTexture = readTexture ( (char *) "images/woodalt.tga");
 	pTexture = readTexture ( (char *) "images/wood2alt.tga");
+
+	bTexture = readTexture ( (char *) "images/clouds.tga");
 }
 
 void freeTextures() {
 	glDeleteTextures(1,&wTexture);
 	glDeleteTextures(1,&sTexture);
 	glDeleteTextures(1,&pTexture);
+	glDeleteTextures(1,&bTexture);
 }
 
 void initModels() {

@@ -72,7 +72,11 @@ void background()
 		1.0f,1.0f, 0.0f,1.0f, 0.0f,0.0f, 1.0f,0.0f,
 	};
 
-	glDisable(GL_DEPTH_TEST);
+	float bNormal[] = {
+		1.0f,1.0f, 0.0f,1.0f, 0.0f,0.0f, 1.0f,0.0f,
+	};
+
+	//glDisable(GL_DEPTH_TEST);
 
 	// Background Image
 	glMatrixMode(GL_MODELVIEW);
@@ -83,9 +87,11 @@ void background()
 	glBindTexture(GL_TEXTURE_2D, bTexture);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glVertexPointer(2,GL_FLOAT,0,bVertex);
+	glNormalPointer(GL_FLOAT,0,bTexCoord);
 	glTexCoordPointer(2,GL_FLOAT,0,bTexCoord);
 
 	glDrawArrays(GL_QUADS,0,4);
@@ -94,7 +100,7 @@ void background()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	// End Background Image
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 }
@@ -102,7 +108,7 @@ void background()
 //Procedura rysująca
 void displayFrame() {
 	//Wyczyść bufor kolorów i bufor głębokości
-	//glClearColor(0.6,0.7,1,1);
+	///glClearColor(0.6,0.7,1,1);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	background();
@@ -131,9 +137,11 @@ void displayFrame() {
 	displayWater(t);
 
 	//Narysuj statek
-	S = scale(mat4(1.0f), vec3(0.0002,0.0002,0.0002));
+	//S = scale(mat4(1.0f), vec3(0.0002,0.0002,0.0002));
+	S = scale(mat4(1.0f), vec3(3.0,3.0,3.0));
+	T = translate(mat4(1.0f), vec3(-0.09,-0.025,-0.05));
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(value_ptr(V*M*S));
+	glLoadMatrixf(value_ptr(V*M*S*T));
 	glBindTexture(GL_TEXTURE_2D,pTexture);
 	drawShip();
 
@@ -145,9 +153,9 @@ void displayFrame() {
 
 	//z prawej strony
 	Mp=rotate(M,70.0f,vec3(0,0,1));
-	Mb=rotate(mat4(1.0f),15*sinf(anglee+90),vec3(0,0,1));
+	Mb=rotate(mat4(1.0f),12*sinf(anglee+90),vec3(0,0,-1));
 
-	T = translate(mat4(1.0f), vec3(0,0,-10));
+	T = translate(mat4(1.0f), vec3(0,0,-5));
 	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
 	drawPaddle();
 
@@ -155,15 +163,15 @@ void displayFrame() {
 	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
 	drawPaddle();
 
-	T = translate(mat4(1.0f), vec3(0,0,30));
+	T = translate(mat4(1.0f), vec3(0,0,25));
 	glLoadMatrixf(value_ptr(V*Mp*S*T*Ma*Mb));
 	drawPaddle();
 
 	//z lewej strony
 	Ml=rotate(M,70.0f,vec3(0,0,-1));
-	Mb=rotate(mat4(1.0f),15*sinf(anglee+90),vec3(0,0,-1));
+	Mb=rotate(mat4(1.0f),12*sinf(anglee+90),vec3(0,0,1));
 
-	T = translate(mat4(1.0f), vec3(0,0,-10));
+	T = translate(mat4(1.0f), vec3(0,0,-5));
 	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
 	drawPaddle();
 
@@ -171,7 +179,7 @@ void displayFrame() {
 	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
 	drawPaddle();
 
-	T = translate(mat4(1.0f), vec3(0,0,30));
+	T = translate(mat4(1.0f), vec3(0,0,25));
 	glLoadMatrixf(value_ptr(V*Ml*S*T*Ma*Mb));
 	drawPaddle();
 
@@ -268,6 +276,15 @@ void initGLEW() {
 void initOpenGL() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_NORMALIZE);
+
 }
 
 void initTextures() {

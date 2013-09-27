@@ -1,6 +1,6 @@
 #include "water.h"
 
-#define	RESOLUTION 64
+#define	RESOLUTION 48
 #define SIZE 8.
 
 vec3 wVertices[2 * RESOLUTION * (RESOLUTION + 1)];

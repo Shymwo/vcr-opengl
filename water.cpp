@@ -1,13 +1,13 @@
 #include "water.h"
 
-#define	RESOLUTION 48
+#define	RESOLUTION 64
 #define SIZE 8.
 
-vec3 wVertices[2 * RESOLUTION * (RESOLUTION + 1)];
-vec3 wNormals[2 * RESOLUTION * (RESOLUTION + 1)];
+vec3 wVertices[2 * RESOLUTION * RESOLUTION];
+vec3 wNormals[2 * RESOLUTION * RESOLUTION];
 
 const float delta = SIZE / RESOLUTION;
-const unsigned int leng = 2 * (RESOLUTION + 1);
+const unsigned int leng = 2 * RESOLUTION;
 unsigned int i,j;
 float x,y,l;
 unsigned int indice,preindice;
@@ -18,7 +18,7 @@ vec3 v1,v2,v3,va,vb,n;
 
 float z (float x, float y, float t)
 {
-  x=x-2; y=y-4;
+  x=x+2; y=y+4;
   return (2 * sinf (20 * sqrtf (pow(x,2) + pow(y,2)) - 4 * t) / 200);
 }
 
@@ -27,14 +27,14 @@ void updateVertices(float t) {
   for (j = 0; j <= RESOLUTION; j++) {
 	  y = j * delta - SIZE/2;
 	  for (i = 0; i <= RESOLUTION; i++) {
-		  indice = 2 * (i + j * (RESOLUTION + 1));
+		  indice = 2 * (i + j * RESOLUTION);
 
 		  x = i * delta - SIZE/2;
 		  wVertices[indice + 1] = vec3( x, z (x, y, t), y);
 
 		  if (j != 0) {
 			  /* Values were computed during the previous loop */
-			  preindice = 2 * (i + (j - 1) * (RESOLUTION + 1));
+			  preindice = 2 * (i + (j - 1) * RESOLUTION);
 			  wVertices[indice] = wVertices[preindice + 1];
 		  } else {
 			  wVertices[indice] = wVertices[indice + 1];
@@ -47,7 +47,7 @@ void updateNormals(float t) {
   /* Normals */
   for (j = 0; j < RESOLUTION; j++) {
 	  for (i = 0; i <= RESOLUTION; i++) {
-		indice = 2 * (i + j * (RESOLUTION + 1));
+		indice = 2 * (i + j * RESOLUTION);
 
 		v1 = wVertices[indice+1]; v2 = wVertices[indice]; v3 = wVertices[indice+2];
 
@@ -62,7 +62,7 @@ void updateNormals(float t) {
 
 		if (j != 0) {
 			/* Values were computed during the previous loop */
-			preindice = 2 * (i + (j - 1) * (RESOLUTION + 1));
+			preindice = 2 * (i + (j - 1) * RESOLUTION);
 			wNormals[indice] = wNormals[preindice + 1];
 		} else {
 			wNormals[indice] = wNormals[indice + 1];
@@ -92,10 +92,10 @@ void displayWater (float t)
   for (i = 0; i < RESOLUTION; i++)
     glDrawArrays (GL_TRIANGLE_STRIP, i * leng, leng);
 
-	glDisable (GL_TEXTURE_GEN_S);
-	glDisable (GL_TEXTURE_GEN_T);
+  glDisable (GL_TEXTURE_GEN_S);
+  glDisable (GL_TEXTURE_GEN_T);
 
-	glDisableClientState (GL_NORMAL_ARRAY);
-	glDisableClientState (GL_VERTEX_ARRAY);
+  glDisableClientState (GL_NORMAL_ARRAY);
+  glDisableClientState (GL_VERTEX_ARRAY);
 
 }

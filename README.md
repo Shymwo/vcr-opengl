@@ -1,12 +1,8 @@
 vcr-opengl
 ==========
 
-TODO:
- - rendering poruszających się wioseł
-
 EWENTUALNIE:
- - odpowiednie oświetlenie i cieniowane
- - poprawa teksturowania
+ - poprawa oświetlenia i cieniowania
  - poprawa wydajności
 
 DONE:

@@ -13,10 +13,12 @@
 using namespace std;
 using namespace glm;
 
-void loadShip();
+void loadShip(char* filename);
 void drawShip();
 
-void loadPaddle();
+void loadPaddle(char* filename);
 void drawPaddle();
+
+void deleteShipBuffers();
 
 #endif

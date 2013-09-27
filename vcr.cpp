@@ -26,8 +26,8 @@ static int left_click = GLUT_UP;
 static int right_click = GLUT_UP;
 static int xold = 0;
 static int yold = 0;
-static float rotate_x = 60;
-static float rotate_y = 30;
+static float rotate_x = -50;
+static float rotate_y = 15;
 static float translate_z = 40;
 
 //textures
@@ -285,6 +285,16 @@ void initOpenGL() {
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_NORMALIZE);
 
+	float ambient[]={0,0,0,1};
+	float diffuse[]={0.7,0.5,0.5,1};
+	float specular[]={0.5,0.5,0.5,1};
+	int shin=50;
+
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shin);
+
 }
 
 void initTextures() {
@@ -306,8 +316,8 @@ void freeTextures() {
 }
 
 void initModels() {
-	loadShip();
-	loadPaddle();
+	loadShip((char*) "medieval.obj");
+	loadPaddle((char*) "paddle.obj");
 }
 
 int main(int argc, char** argv) {
@@ -320,5 +330,6 @@ int main(int argc, char** argv) {
 	glutMainLoop();
 
 	freeTextures();
+	deleteShipBuffers();
 	return 0;
 }
